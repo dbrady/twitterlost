@@ -22,7 +22,7 @@ def followers_page(page)
   @client.my :followers, :page => page
 end
 
-# kludgy loop but I dunno how to clean it up without making it unreadable
+# Get all your followers. Loop is still kludgy.
 p,f,followers=0,[],[]
 followers += f.map { |u| u.screen_name } while (f=followers_page(p+=1)).any?
 followers.sort!
