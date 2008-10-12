@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+# twitterlost--keep track of unsubscribed followers. Still just a 0.0.1 proof of concept. YMMV.
+# David Brady dbrady@shinybit.com http://twitter.com/chalain
+# 
+# TODO: Consider a sqlite database instead of flat files, track new/lost dates
+# TODO: Clean up ugly while loop
+
+# !!!IMPORTANT NOTE!!! requires twitter4r >= 0.3.1 and as of
+# 2008-10-11  rubyforge version is 0.3.0. Make sure you have github
+# gem sources, then gem install mbbx6spp-twitter4r
+require 'rubygems'
+require 'twitter'
+require 'yaml'
+
+cfg = YAML::load_file "twitter.yml"
+
+old_followers = IO.readlines("twitterlost_followers.txt").map {|line| line.strip }.sort rescue []
+
+@client = Twitter::Client.new :login => cfg[:login], :password => cfg[:password] 
+
+def followers_page(page)
+  @client.my :followers, :page => page
+end
+
+# kludgy loop but I dunno how to clean it up without making it unreadable
+p,f,followers=0,[],[]
+followers += f.map { |u| u.screen_name } while (f=followers_page(p+=1)).any?
+followers.sort!
+
+lost_followers = old_followers - followers
+new_followers = followers - old_followers
+
+puts "You have #{followers.size} followers. Since the last time this program was run you lost #{lost_followers.size} followers and gained #{new_followers.size} new ones."
+
+puts lost_followers.map { |u| "LOST: #{u}" }
+puts new_followers.map { |u| "NEW: #{u}" }
+
+File.new("twitterlost_followers.txt", "w").puts followers
+File.new("twitterlost_lost.txt", "a").puts lost_followers if lost_followers.any?
