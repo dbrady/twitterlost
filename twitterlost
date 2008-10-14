@@ -12,9 +12,14 @@ require 'rubygems'
 require 'twitter'
 require 'yaml'
 
-cfg = YAML::load_file "twitter.yml"
+base_dir = File.expand_path("~/.twitterlost/")
 
-old_followers = IO.readlines("twitterlost_followers.txt").map {|line| line.strip }.sort rescue []
+# Make sure the dir exists
+FileUtils.mkdir_p(base_dir)
+
+cfg = YAML::load_file( File.join(base_dir, "twitter.yml") )
+
+old_followers = IO.readlines(File.join(base_dir, "followers.txt")).map {|line| line.strip }.sort rescue []
 
 @client = Twitter::Client.new :login => cfg[:login], :password => cfg[:password] 
 
@@ -35,5 +40,5 @@ puts "You have #{followers.size} followers. Since the last time this program was
 puts lost_followers.map { |u| "LOST: #{u}" }
 puts new_followers.map { |u| "NEW: #{u}" }
 
-File.new("twitterlost_followers.txt", "w").puts followers
-File.new("twitterlost_lost.txt", "a").puts lost_followers if lost_followers.any?
+File.new(File.join(base_dir, "followers.txt"), "w").puts followers
+File.new(File.join(base_dir, "lost.txt"), "a").puts lost_followers if lost_followers.any?
