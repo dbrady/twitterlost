@@ -1,0 +1,55 @@
+README
+
+twitterlost is a command-line tool to keep track of your Twitter
+followers. Each time it runs it shows you the new and lost followers
+since the last time it ran.
+
+Description
+-----------
+
+Keep track of your twitter followers, see who has unfollowed
+you. Sadly it will not tell you why (but it was probably because of
+something you did).
+
+Installation
+------------
+
+1. Put twitterlost somewhere in your path.
+
+2. mkdir ~/.twitterlost
+
+3. copy twitter_sample.yml into ~/.twitterlost. Rename it to
+"twitter.yml" and edit it to contain your twitter login and password.
+
+That's it. The first time you run twitterlost it will see all your
+followers as new; after that it will only report changes.
+
+License
+-------
+
+Twitterlost is released under the MIT license. Take it, play with it,
+do whatever you want with it, keep this version free.
+
+Motivation
+----------
+
+Why did I write Twitterlost? Because I think Twitterless.com is a good
+service wrapped around a brilliant idea, but I didn't want to give
+them my Twitter login and password. If you don't see a problem with
+giving them your login credentials, then by all means use their
+service; it's better than this hack. They'll send you regular email
+updates and such, where twitterlost has to be run by hand.
+
+Known Issues
+------------
+
+twitterlost uses the Twitter API to retrieve your list of
+friends. This is returned in chunks of 100. If you have more than 100
+followers, twitterlost must make multiple calls to Twitter. EACH CALL
+counts towards Twitter's 70-calls-per-hour limit. If you have many
+followers and are running a polling Twitter client, Twitter may slap
+you withan "overloaded" message. If this happens to twitterlost, it
+interprets this as the end of your friends list, which means it will
+report all those people as lost friends. They'll come back the next
+time you run twitterlost.
+
