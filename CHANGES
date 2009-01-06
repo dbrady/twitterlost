@@ -1,0 +1,20 @@
+CHANGES
+
+0.0.4 
+
+- Added this CHANGES file
+
+- Twitterlost now writes default twitter.yml file
+  ~/.twitterlost/twitter.yml is missing
+
+0.0.3
+
+- Version bump to trigger gem build on github.
+
+0.0.2
+
+- Initial gem release
+
+0.0.1
+
+- Pre-gem code

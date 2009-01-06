@@ -13,32 +13,52 @@ require 'twitter'
 require 'yaml'
 
 base_dir = File.expand_path("~/.twitterlost/")
+yaml_file = File.join(base_dir, "twitter.yml")
 
 # Make sure the dir exists
 FileUtils.mkdir_p(base_dir)
 
-cfg = YAML::load_file( File.join(base_dir, "twitter.yml") )
+# Ensure twitter.yml exists; create default for user if not
+if File.exists?(yaml_file)
+  cfg = YAML::load_file( yaml_file )
 
-old_followers = IO.readlines(File.join(base_dir, "followers.txt")).map {|line| line.strip }.sort rescue []
+  old_followers = IO.readlines(File.join(base_dir, "followers.txt")).map {|line| line.strip }.sort rescue []
 
-@client = Twitter::Client.new :login => cfg[:login], :password => cfg[:password] 
+  @client = Twitter::Client.new :login => cfg[:login], :password => cfg[:password] 
 
-def followers_page(page)
-  @client.my :followers, :page => page
+  def followers_page(page)
+    @client.my :followers, :page => page
+  end
+
+  # Get all your followers. Loop is still kludgy.
+  p,f,followers=0,[],[]
+  followers += f.map { |u| u.screen_name } while (f=followers_page(p+=1)).any?
+  followers.sort!
+
+  lost_followers = old_followers - followers
+  new_followers = followers - old_followers
+
+  puts "You have #{followers.size} followers. Since the last time this program was run you lost #{lost_followers.size} followers and gained #{new_followers.size} new ones."
+
+  puts lost_followers.map { |u| "LOST: #{u}" }
+  puts new_followers.map { |u| "NEW: #{u}" }
+
+  File.new(File.join(base_dir, "followers.txt"), "w").puts followers
+  File.new(File.join(base_dir, "lost.txt"), "a").puts lost_followers if lost_followers.any?
+else
+  puts <<HELP
+Welcome to Twitterlost! I cannot find your twitter.yml file.
+
+I will write out a default file for you, but you will need to
+edit the file to contain your twitter username and password.
+
+Writing default file to #{yaml_file}...
+HELP
+
+  File.open(yaml_file, 'w') do |f|
+    f.puts '---'
+    f.puts ':login: USERNAME'
+    f.puts ':password: PASSWORD'
+  end
 end
 
-# Get all your followers. Loop is still kludgy.
-p,f,followers=0,[],[]
-followers += f.map { |u| u.screen_name } while (f=followers_page(p+=1)).any?
-followers.sort!
-
-lost_followers = old_followers - followers
-new_followers = followers - old_followers
-
-puts "You have #{followers.size} followers. Since the last time this program was run you lost #{lost_followers.size} followers and gained #{new_followers.size} new ones."
-
-puts lost_followers.map { |u| "LOST: #{u}" }
-puts new_followers.map { |u| "NEW: #{u}" }
-
-File.new(File.join(base_dir, "followers.txt"), "w").puts followers
-File.new(File.join(base_dir, "lost.txt"), "a").puts lost_followers if lost_followers.any?
