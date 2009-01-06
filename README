@@ -14,12 +14,16 @@ something you did).
 Installation
 ------------
 
-1. Put twitterlost somewhere in your path.
+1. Install the gem.
 
-2. mkdir ~/.twitterlost
+2. mkdir ~/.twitterlost (or run twitterlost once and it will be
+   created for you)
 
-3. copy twitter_sample.yml into ~/.twitterlost. Rename it to
-"twitter.yml" and edit it to contain your twitter login and password.
+3. Edit ~/.twitterlost/twitter.yml with the following information:
+
+---
+:login: $USERNAME
+:password: $PASSWORD
 
 That's it. The first time you run twitterlost it will see all your
 followers as new; after that it will only report changes.
