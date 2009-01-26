@@ -40,11 +40,13 @@ if File.exists?(yaml_file)
 
   puts "You have #{followers.size} followers. Since the last time this program was run you lost #{lost_followers.size} followers and gained #{new_followers.size} new ones."
 
-  puts lost_followers.map { |u| "LOST: #{u}" }
-  puts new_followers.map { |u| "NEW: #{u}" }
+  longest_lost, longest_new = lost_followers.map { |u| u.size }.max, new_followers.map { |u| u.size }.max
+  
+  puts lost_followers.map { |u| "LOST: %-#{longest_lost}s http://twitter.com/#{u}" % u}
+  puts new_followers.map { |u| "NEW: %-#{longest_new}s http://twitter.com/#{u}" % u}
 
-  File.new(File.join(base_dir, "followers.txt"), "w").puts followers
-  File.new(File.join(base_dir, "lost.txt"), "a").puts lost_followers if lost_followers.any?
+  File.new(File.join(base_dir, "followers.txt"), "w").puts followers.map {|f| "#{f}"}
+  File.new(File.join(base_dir, "lost.txt"), "a").puts lost_followers.map {|f| "#{f}"} if lost_followers.any?
 else
   puts <<HELP
 Welcome to Twitterlost! I cannot find your twitter.yml file.

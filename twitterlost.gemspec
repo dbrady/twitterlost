@@ -1,6 +1,6 @@
 spec = Gem::Specification.new do |s|
   s.name = 'twitterlost'
-  s.version = '0.0.4'
+  s.version = '0.0.5'
   s.date = '2009-01-05'
   s.summary = 'Twitterlost - keep track of your twitter followers lost and gained'
   s.email = "github@shinybit.com"
